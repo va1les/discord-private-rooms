@@ -1,12 +1,21 @@
-# Discord bot template with [Discord.js v13](https://discord.js.org)
-## Setup
-To run your discord bot, you need to insert the bot token into the `.env` file.
+# Установка
 
-For the MongoDB database to work, you need to insert the connection link into the `.env` file
+> **1.** Переменуйте файл `example.env` => `.env`.<br>
+> `DISCORD_TOKEN` — Токен бота.<br>
+> `MONGO` — Ссылка на подключение к базе данных MongoDB.
 
-## Information
-All categories for commands are located in the `commands' folder, the categories contain files with commands.
+> **2.** Установите все модули — `npm i`
 
-Event files are located by category in the `events' folder.
+> **3.** Запустите бота — `node .`.
+***
+# Система
+> `commands/private-voices/private-voices.js`, `events/SlashCommand.js`, `events/voiceStateUpdate.js`.
 
-# Enjoy using :)
+`commands/private-voices/private-voices.js`
+> создает категорию с текстовым и голосовым каналом.
+
+`events/SlashCommand.js`
+> отслеживание нажатия кнопок.
+
+`events/voiceStateUpdate.js`
+> отслеживание входы и выхода из голосового канала.
