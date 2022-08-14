@@ -60,6 +60,7 @@ module.exports = {
             })
             let textId = await interaction.guild.channels.create('settings', {
                 parent: categoryId,
+                topic: `Управление приватного канала`,
                 permissionOverwrites: [
                     {
                         id: interaction.guild.id,

@@ -43,7 +43,7 @@ module.exports = {
                                     'private_voices.lock': true
                                 }
                             })
-                            await interaction.reply({ content: `Канал открыт.`, ephemeral: true }).catch(() => null)
+                            await interaction.reply({ embeds: [new MessageEmbed().setColor('BLURPLE').setDescription(`🔓 Канал открыт`)], ephemeral: true }).catch(() => null)
                             await interaction.member.voice.channel.edit({
                                 parent: data?.private_voices?.categoryId,
                                 permissionOverwrites: [
@@ -59,7 +59,7 @@ module.exports = {
                                     'private_voices.lock': false
                                 }
                             })
-                            await interaction.reply({ content: `Канал закрыт.`, ephemeral: true }).catch(() => null)
+                            await interaction.reply({ embeds: [new MessageEmbed().setColor('BLURPLE').setDescription(`🔒 Канал закрыт`)], ephemeral: true }).catch(() => null)
                             await interaction.member.voice.channel.edit({
                                 parent: data?.private_voices?.categoryId,
                                 permissionOverwrites: [
