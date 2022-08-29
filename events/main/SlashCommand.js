@@ -1,4 +1,4 @@
-const { Interaction, Client, MessageEmbed, Modal, MessageActionRow, TextInputComponent } = require('discord.js')
+const { Interaction, Client, EmbedBuilder, ModalBuilder, ActionRowBuilder, TextInputComponent } = require('discord.js')
 const Perms = require('../../jsons/permissions.json');
 const { checkDB } = require('../../utils/funcs');
 
@@ -20,7 +20,7 @@ module.exports = {
             if (data?.private_voices?.mode === true) {
                 if (interaction.member?.voice.channel && interaction.channel.id === data?.private_voices?.textId && interaction.channel.id === data.private_voices.textId && interaction.member?.voice.channel.id === user_data?.private_voices?.voiceId && interaction.member.voice.channel.id === user_data.private_voices.voiceId) {
                     if (interaction.customId === 'rename') {
-                        const modal = new Modal()
+                        const Modal = new ModalBuilder()
                             .setCustomId('myModal')
                             .setTitle('Изменение названия канала');
                         const Input = new TextInputComponent()
@@ -30,9 +30,9 @@ module.exports = {
                             .setStyle('SHORT')
                             .setMinLength(1)
                             .setMaxLength(24)
-                        firstActionRow = new MessageActionRow().addComponents(Input);
-                        modal.addComponents(firstActionRow);
-                        await interaction.showModal(modal);
+                        firstActionRow = new ActionRowBuilder().addComponents(Input);
+                        Modal.addComponents(firstActionRow);
+                        await interaction.showModal(Modal);
                     }
                     if (interaction.customId === 'lock') {
                         let user_data = await User.findOne({ userId: interaction.user.id });
@@ -43,7 +43,7 @@ module.exports = {
                                     'private_voices.lock': true
                                 }
                             })
-                            await interaction.reply({ embeds: [new MessageEmbed().setColor('BLURPLE').setDescription(`🔓 Канал открыт`)], ephemeral: true }).catch(() => null)
+                            await interaction.reply({ embeds: [new EmbedBuilder().setColor('BLURPLE').setDescription(`🔓 Канал открыт`)], ephemeral: true }).catch(() => null)
                             await interaction.member.voice.channel.edit({
                                 parent: data?.private_voices?.categoryId,
                                 permissionOverwrites: [
@@ -59,7 +59,7 @@ module.exports = {
                                     'private_voices.lock': false
                                 }
                             })
-                            await interaction.reply({ embeds: [new MessageEmbed().setColor('BLURPLE').setDescription(`🔒 Канал закрыт`)], ephemeral: true }).catch(() => null)
+                            await interaction.reply({ embeds: [new EmbedBuilder().setColor('BLURPLE').setDescription(`🔒 Канал закрыт`)], ephemeral: true }).catch(() => null)
                             await interaction.member.voice.channel.edit({
                                 parent: data?.private_voices?.categoryId,
                                 permissionOverwrites: [
@@ -72,7 +72,7 @@ module.exports = {
                         }
                     }
                     if (interaction.customId === 'bit') {
-                        const modal = new Modal()
+                        const Modal = new ModalBuilder()
                             .setCustomId('bit')
                             .setTitle('Изменение битрейта канала');
                         const Input = new TextInputComponent()
@@ -82,12 +82,12 @@ module.exports = {
                             .setStyle('SHORT')
                             .setMinLength(1)
                             .setMaxLength(2)
-                        firstActionRow = new MessageActionRow().addComponents(Input);
-                        modal.addComponents(firstActionRow);
-                        await interaction.showModal(modal);
+                        firstActionRow = new ActionRowBuilder().addComponents(Input);
+                        Modal.addComponents(firstActionRow);
+                        await interaction.showModal(Modal);
                     }
                     if (interaction.customId === 'limit') {
-                        const modal = new Modal()
+                        const Modal = new ModalBuilder()
                             .setCustomId('limit')
                             .setTitle('Изменение лимита пользователей');
                         const Input = new TextInputComponent()
@@ -97,12 +97,12 @@ module.exports = {
                             .setStyle('SHORT')
                             .setMinLength(1)
                             .setMaxLength(2)
-                        firstActionRow = new MessageActionRow().addComponents(Input);
-                        modal.addComponents(firstActionRow);
-                        await interaction.showModal(modal);
+                        firstActionRow = new ActionRowBuilder().addComponents(Input);
+                        Modal.addComponents(firstActionRow);
+                        await interaction.showModal(Modal);
                     }
                     if (interaction.customId === 'kick') {
-                        const modal = new Modal()
+                        const Modal = new ModalBuilder()
                             .setCustomId('kick')
                             .setTitle('Изменение лимита пользователей');
                         const Input = new TextInputComponent()
@@ -112,9 +112,9 @@ module.exports = {
                             .setStyle('SHORT')
                             .setMinLength(1)
                             .setMaxLength(20)
-                        firstActionRow = new MessageActionRow().addComponents(Input);
-                        modal.addComponents(firstActionRow);
-                        await interaction.showModal(modal);
+                        firstActionRow = new ActionRowBuilder().addComponents(Input);
+                        Modal.addComponents(firstActionRow);
+                        await interaction.showModal(Modal);
                     }
                 } else {
                     if (interaction.customId === 'delete') return;
@@ -126,32 +126,32 @@ module.exports = {
         if (interaction.isModalSubmit()) {
             if (interaction.customId === 'myModal') {
                 const input = interaction.fields.getTextInputValue('Input');
-                interaction.reply({ embeds: [new MessageEmbed().setColor('BLURPLE').setDescription(`Новое имя канала \`${input}\``)], ephemeral: true })
+                interaction.reply({ embeds: [new EmbedBuilder().setColor('BLURPLE').setDescription(`Новое имя канала \`${input}\``)], ephemeral: true })
                 await interaction.member.voice.channel.setName(input).catch(() => null)
             }
             if (interaction.customId === 'bit') {
                 let input = interaction.fields.getTextInputValue('InputBit');
-                if (isNaN(input)) return interaction.reply({ embeds: [new MessageEmbed().setColor(Config.colors.danger).setDescription(`Вы ввели некорректное число.`)], ephemeral: true })
+                if (isNaN(input)) return interaction.reply({ embeds: [new EmbedBuilder().setColor(Config.colors.danger).setDescription(`Вы ввели некорректное число.`)], ephemeral: true })
                 if (input > 96) input = 96
                 if (input < 8) input = 8
-                interaction.reply({ embeds: [new MessageEmbed().setColor('BLURPLE').setDescription(`Установлен новый битрейт \`${input}\``)], ephemeral: true })
+                interaction.reply({ embeds: [new EmbedBuilder().setColor('BLURPLE').setDescription(`Установлен новый битрейт \`${input}\``)], ephemeral: true })
                 await interaction.member.voice.channel.setBitrate(input + `_000`).catch(() => null)
             }
             if (interaction.customId === 'limit') {
                 let input = interaction.fields.getTextInputValue('InputLimit');
-                if (isNaN(input)) return interaction.reply({ embeds: [new MessageEmbed().setColor(Config.colors.danger).setDescription(`Вы ввели некорректное число.`)], ephemeral: true })
-                interaction.reply({ embeds: [new MessageEmbed().setColor('BLURPLE').setDescription(`Лимит пользователей установлен \`${input}\``)], ephemeral: true })
+                if (isNaN(input)) return interaction.reply({ embeds: [new EmbedBuilder().setColor(Config.colors.danger).setDescription(`Вы ввели некорректное число.`)], ephemeral: true })
+                interaction.reply({ embeds: [new EmbedBuilder().setColor('BLURPLE').setDescription(`Лимит пользователей установлен \`${input}\``)], ephemeral: true })
                 await interaction.member.voice.channel.setUserLimit(input).catch(() => null)
             }
             if (interaction.customId === 'kick') {
                 let user_data = await User.findOne({ userId: interaction.user.id });
                 let input = interaction.fields.getTextInputValue('InputKick');
                 interaction.guild.members.fetch(input).then(x => {
-                    if (x.voice.channel.id !== user_data.private_voices.voiceId) return interaction.reply({ embeds: [new MessageEmbed().setColor('BLURPLE').setDescription(`Указанный участник не находится в голосовом канале.`)], ephemeral: true })
-                    interaction.reply({ embeds: [new MessageEmbed().setColor('BLURPLE').setDescription(`**${x.user.tag}**, выгнан с голосового канала.`)], ephemeral: true })
+                    if (x.voice.channel.id !== user_data.private_voices.voiceId) return interaction.reply({ embeds: [new EmbedBuilder().setColor('BLURPLE').setDescription(`Указанный участник не находится в голосовом канале.`)], ephemeral: true })
+                    interaction.reply({ embeds: [new EmbedBuilder().setColor('BLURPLE').setDescription(`**${x.user.tag}**, выгнан с голосового канала.`)], ephemeral: true })
                     x.voice.disconnect()
                 }, y => {
-                    interaction.reply({ embeds: [new MessageEmbed().setColor(Config.colors.danger).setDescription(`Вы ввели некорректный ID.`)], ephemeral: true })
+                    interaction.reply({ embeds: [new EmbedBuilder().setColor(Config.colors.danger).setDescription(`Вы ввели некорректный ID.`)], ephemeral: true })
                 }
                 )
                 await interaction.member.voice.channel.setUserLimit(input).catch(() => null)
@@ -167,7 +167,7 @@ module.exports = {
         if (!cmd) return;
 
         interaction.guild.owner = await interaction.guild.fetchOwner()
-        interaction.default = async (message, foo) => await interaction.reply({ embeds: [new MessageEmbed({ description: message, color: Config.colors.success })], ephemeral: foo })
+        interaction.default = async (message, foo) => await interaction.reply({ embeds: [new EmbedBuilder({ description: message, color: Config.colors.success })], ephemeral: foo })
 
         if (cmd.permissions && !Config.developers.includes(interaction.user.id)) {
             let invalidPerms = []

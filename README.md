@@ -1,21 +1,33 @@
-# Установка
+# discord-private-rooms
+Easy To Use!
 
-> **1.** Переменуйте файл `example.env` => `.env`.<br>
-> `DISCORD_TOKEN` — Токен бота.<br>
-> `MONGO` — Ссылка на подключение к базе данных MongoDB.
+**Links:**
 
-> **2.** Установите все модули — `npm i`
+💻 Node.js: https://nodejs.org/en/<br>
 
-> **3.** Запустите бота — `node .`.
-***
-# Система
-> `commands/private-voices/private-voices.js`, `events/SlashCommand.js`, `events/voiceStateUpdate.js`.
+⌨️ Visual Studio Code: https://code.visualstudio.com/
 
-`commands/private-voices/private-voices.js`
-> создает категорию с текстовым и голосовым каналом.
+🧑‍💻 Discord Developer Portal: https://discord.com/developers/applications
 
-`events/SlashCommand.js`
-> отслеживание нажатия кнопок.
+📑 Discord.js Docs: https://discord.js.org/#/docs/discord.js/14.0.3/general/welcome
 
-`events/voiceStateUpdate.js`
-> отслеживание входы и выхода из голосового канала.
+📚 Discord.js Guide: https://discordjs.guide/additional-info/changes-in-v14.html
+
+---
+# install
+### 📨 **File** `example.env` rename to `.env`
+```Shell
+DISCORD_TOKEN=YourTokenHere
+MONGO=YourMongoUriHere
+```
+
+### 📥 Install all modules — `npm install`
+
+### ✅ Launch the Bot — `node .`
+---
+```js
+contacts: {
+telegram: "@va1les_tg",
+discord: "! va1les#8845", // https://discord.com/users/550336142160035840
+}
+```

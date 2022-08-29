@@ -1,4 +1,4 @@
-const { Client, CommandInteraction, NewsChannel, MessageButton, MessageActionRow, MessageEmbed } = require('discord.js')
+const { Client, CommandInteraction, ButtonBuilder, ActionRowBuilder, EmbedBuilder } = require('discord.js')
 const { SlashCommandBuilder, Embed } = require('@discordjs/builders')
 
 const Guild = require('../../models/Guild')
@@ -17,9 +17,9 @@ module.exports = {
         }
         let newdata = await Guild.findOne({ guildId: interaction.guild.id });
         if (newdata?.private_voices?.categoryId && newdata?.private_voices?.channelId != null) {
-            let btn = new MessageActionRow().addComponents(new MessageButton().setCustomId('delete').setLabel('Удалить').setStyle('DANGER'))
+            let btn = new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId('delete').setLabel('Удалить').setStyle('DANGER'))
             await interaction.reply({ content: `🔨_ _`, ephemeral: true })
-            let message = await interaction.channel.send({ embeds: [new MessageEmbed().setColor('BLURPLE').setDescription('Система приватных комнат уже существует, удалить?')], components: [btn] })
+            let message = await interaction.channel.send({ embeds: [new EmbedBuilder().setColor('BLURPLE').setDescription('Система приватных комнат уже существует, удалить?')], components: [btn] })
             setTimeout(() => {
                 message.edit({ components: [] }).catch(() => null)
             }, 20 * 1000);
@@ -69,15 +69,15 @@ module.exports = {
                 ]
             })
             // КНОПКИ УПРАВЛЕНИЯ
-            let rename = new MessageButton().setCustomId('rename').setEmoji('✏️').setStyle('SECONDARY');
-            let lock = new MessageButton().setCustomId('lock').setEmoji('🔒').setStyle('SECONDARY');
-            let bit = new MessageButton().setCustomId('bit').setEmoji('📻').setStyle('SECONDARY')
-            let limit = new MessageButton().setCustomId('limit').setEmoji('🫂').setStyle('SECONDARY')
-            let kick = new MessageButton().setCustomId('kick').setEmoji('🚫').setStyle('SECONDARY')
+            let rename = new ButtonBuilder().setCustomId('rename').setEmoji('✏️').setStyle('SECONDARY');
+            let lock = new ButtonBuilder().setCustomId('lock').setEmoji('🔒').setStyle('SECONDARY');
+            let bit = new ButtonBuilder().setCustomId('bit').setEmoji('📻').setStyle('SECONDARY')
+            let limit = new ButtonBuilder().setCustomId('limit').setEmoji('🫂').setStyle('SECONDARY')
+            let kick = new ButtonBuilder().setCustomId('kick').setEmoji('🚫').setStyle('SECONDARY')
 
-            let Buttons = new MessageActionRow().addComponents([lock, rename, bit, limit, kick])
+            let Buttons = new ActionRowBuilder().addComponents([lock, rename, bit, limit, kick])
 
-            let Embed = new MessageEmbed().setAuthor({ name: 'Управление приватного канала', iconURL: interaction.guild.iconURL() })
+            let Embed = new EmbedBuilder().setAuthor({ name: 'Управление приватного канала', iconURL: interaction.guild.iconURL() })
                 .setDescription('🔒 — открыть / закрыть канал.\n✏️ — переменовать канал.\n📻 — установить битрейт канала.\n🫂 — установить лимит пользователей.\n🚫 — выгнать пользователя с голосового канала.')
                 .setColor('BLURPLE')
             textId.send({ embeds: [Embed], components: [Buttons] })

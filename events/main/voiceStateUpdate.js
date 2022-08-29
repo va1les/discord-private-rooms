@@ -1,4 +1,4 @@
-const { Interaction, Client, MessageEmbed } = require('discord.js')
+const { Client, EmbedBuilder } = require('discord.js')
 const Perms = require('../../jsons/permissions.json');
 const { checkDB } = require('../../utils/funcs');
 
