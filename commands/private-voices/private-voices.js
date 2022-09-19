@@ -1,7 +1,8 @@
-const { Client, CommandInteraction, ButtonBuilder, ActionRowBuilder, EmbedBuilder } = require('discord.js')
+const { Client, CommandInteraction, ButtonBuilder, ActionRowBuilder, EmbedBuilder, ChannelType, PermissionsBitField, UserFlagsBitField, ButtonStyle } = require('discord.js')
 const { SlashCommandBuilder, Embed } = require('@discordjs/builders')
 
-const Guild = require('../../models/Guild')
+const Guild = require('../../models/Guild');
+const BitField = require('sparse-bitfield');
 module.exports = {
     slash: new SlashCommandBuilder()
         .setName('private-voice')
@@ -17,7 +18,7 @@ module.exports = {
         }
         let newdata = await Guild.findOne({ guildId: interaction.guild.id });
         if (newdata?.private_voices?.categoryId && newdata?.private_voices?.channelId != null) {
-            let btn = new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId('delete').setLabel('Удалить').setStyle('DANGER'))
+            let btn = new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId('delete').setLabel('Удалить').setStyle(ButtonStyle.Danger))
             await interaction.reply({ content: `🔨_ _`, ephemeral: true })
             let message = await interaction.channel.send({ embeds: [new EmbedBuilder().setColor('BLURPLE').setDescription('Система приватных комнат уже существует, удалить?')], components: [btn] })
             setTimeout(() => {
@@ -29,12 +30,12 @@ module.exports = {
                 if (i.customId == 'delete') {
                     message.edit({ components: [], content: `Система приватных комнат Удалена ✅` })
                     let data = await Guild.findOne({ guildId: interaction.guild.id })
-                    let channelId = await client.channels.fetch(data?.private_voices?.channelId)
-                    let textId = await client.channels.fetch(data?.private_voices?.textId)
-                    let categoryId = await client.channels.fetch(data?.private_voices?.categoryId)
-                    channelId.delete().catch(() => null)
-                    textId.delete().catch(() => null)
-                    categoryId.delete().catch(() => null)
+                    let channelId = await client.channels.fetch(data?.private_voices?.channelId).catch(() => null)
+                    let textId = await client.channels.fetch(data?.private_voices?.textId).catch(() => null)
+                    let categoryId = await client.channels.fetch(data?.private_voices?.categoryId).catch(() => null)
+                    channelId?.delete().catch(() => null)
+                    textId?.delete().catch(() => null)
+                    categoryId?.delete().catch(() => null)
                     return await Guild.updateOne({ guildId: interaction.guild.id }, {
                         $set: {
                             'private_voices': {}
@@ -43,37 +44,40 @@ module.exports = {
                 }
             })
         } else {
-            let categoryId = await interaction.guild.channels.create(`Join To Create [+]`, {
-                type: 'GUILD_CATEGORY',
+            let categoryId = await interaction.guild.channels.create({
+                name: `Join To Create [+]`,
+                type: ChannelType.GuildCategory,
             })
-            let channelId = await interaction.guild.channels.create(`Create [+]`, {
-                type: 'GUILD_VOICE',
+            let channelId = await interaction.guild.channels.create({
+                name: `Create [+]`,
+                type: ChannelType.GuildVoice,
                 parent: categoryId,
                 userLimit: 1,
                 permissionOverwrites: [
                     {
                         id: interaction.guild.id,
-                        allow: ['CONNECT'],
-                        deny: ['SPEAK']
+                        allow: [PermissionsBitField.Flags.Connect],
+                        deny: [PermissionsBitField.Flags.Speak]
                     }
                 ]
             })
-            let textId = await interaction.guild.channels.create('settings', {
+            let textId = await interaction.guild.channels.create({
+                name: `settigs`,
                 parent: categoryId,
                 topic: `Управление приватного канала`,
                 permissionOverwrites: [
                     {
                         id: interaction.guild.id,
-                        deny: ['SEND_MESSAGES']
+                        deny: [PermissionsBitField.Flags.SendMessages]
                     }
                 ]
             })
             // КНОПКИ УПРАВЛЕНИЯ
-            let rename = new ButtonBuilder().setCustomId('rename').setEmoji('✏️').setStyle('SECONDARY');
-            let lock = new ButtonBuilder().setCustomId('lock').setEmoji('🔒').setStyle('SECONDARY');
-            let bit = new ButtonBuilder().setCustomId('bit').setEmoji('📻').setStyle('SECONDARY')
-            let limit = new ButtonBuilder().setCustomId('limit').setEmoji('🫂').setStyle('SECONDARY')
-            let kick = new ButtonBuilder().setCustomId('kick').setEmoji('🚫').setStyle('SECONDARY')
+            let rename = new ButtonBuilder().setCustomId('rename').setEmoji('✏️').setStyle(ButtonStyle.Secondary);
+            let lock = new ButtonBuilder().setCustomId('lock').setEmoji('🔒').setStyle(ButtonStyle.Secondary);
+            let bit = new ButtonBuilder().setCustomId('bit').setEmoji('📻').setStyle(ButtonStyle.Secondary)
+            let limit = new ButtonBuilder().setCustomId('limit').setEmoji('🫂').setStyle(ButtonStyle.Secondary)
+            let kick = new ButtonBuilder().setCustomId('kick').setEmoji('🚫').setStyle(ButtonStyle.Secondary)
 
             let Buttons = new ActionRowBuilder().addComponents([lock, rename, bit, limit, kick])
 

@@ -1,4 +1,4 @@
-const { Interaction, Client, EmbedBuilder, ModalBuilder, ActionRowBuilder, TextInputComponent } = require('discord.js')
+const { Interaction, Client, EmbedBuilder, ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js')
 const Perms = require('../../jsons/permissions.json');
 const { checkDB } = require('../../utils/funcs');
 
@@ -23,11 +23,11 @@ module.exports = {
                         const Modal = new ModalBuilder()
                             .setCustomId('myModal')
                             .setTitle('Изменение названия канала');
-                        const Input = new TextInputComponent()
+                        const Input = new TextInputBuilder()
                             .setCustomId('Input')
                             .setPlaceholder('Слушаем музыку')
                             .setLabel("Введите новое название")
-                            .setStyle('SHORT')
+                            .setStyle(TextInputStyle.Short)
                             .setMinLength(1)
                             .setMaxLength(24)
                         firstActionRow = new ActionRowBuilder().addComponents(Input);
@@ -75,11 +75,11 @@ module.exports = {
                         const Modal = new ModalBuilder()
                             .setCustomId('bit')
                             .setTitle('Изменение битрейта канала');
-                        const Input = new TextInputComponent()
+                        const Input = new TextInputBuilder()
                             .setCustomId('InputBit')
                             .setPlaceholder('8 - 96 kbps')
                             .setLabel("Введите новый битрейт")
-                            .setStyle('SHORT')
+                            .setStyle(TextInputStyle.Short)
                             .setMinLength(1)
                             .setMaxLength(2)
                         firstActionRow = new ActionRowBuilder().addComponents(Input);
@@ -90,11 +90,11 @@ module.exports = {
                         const Modal = new ModalBuilder()
                             .setCustomId('limit')
                             .setTitle('Изменение лимита пользователей');
-                        const Input = new TextInputComponent()
+                        const Input = new TextInputBuilder()
                             .setCustomId('InputLimit')
                             .setPlaceholder('0 - 99')
                             .setLabel("Введите новый лимит пользователей")
-                            .setStyle('SHORT')
+                            .setStyle(TextInputStyle.Short)
                             .setMinLength(1)
                             .setMaxLength(2)
                         firstActionRow = new ActionRowBuilder().addComponents(Input);
@@ -105,11 +105,11 @@ module.exports = {
                         const Modal = new ModalBuilder()
                             .setCustomId('kick')
                             .setTitle('Изменение лимита пользователей');
-                        const Input = new TextInputComponent()
+                        const Input = new TextInputBuilder()
                             .setCustomId('InputKick')
                             .setPlaceholder('ID-пользователя')
                             .setLabel("Введите ID-пользователя")
-                            .setStyle('SHORT')
+                            .setStyle(TextInputStyle.Short)
                             .setMinLength(1)
                             .setMaxLength(20)
                         firstActionRow = new ActionRowBuilder().addComponents(Input);

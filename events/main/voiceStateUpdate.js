@@ -1,4 +1,4 @@
-const { Client, EmbedBuilder } = require('discord.js')
+const { Client, EmbedBuilder, PermissionFlagsBits, ChannelType } = require('discord.js')
 const Perms = require('../../jsons/permissions.json');
 const { checkDB } = require('../../utils/funcs');
 
@@ -29,15 +29,16 @@ module.exports = {
         }
         if (data?.private_voices?.mode === true) {
             if (newState.channel?.id == channelId) {
-                newState.guild.channels.create(`${newState.member.user.username}'s channel`, {
-                    type: 'GUILD_VOICE',
+                newState.guild.channels.create({
+                    name: `${newState.member.user.username}'s channel`,
+                    type: ChannelType.GuildVoice,
                     parent: categoryId,
                     permissionOverwrites: [{
                         id: newState.member.id,
-                        allow: ["MANAGE_CHANNELS", "MUTE_MEMBERS", "DEAFEN_MEMBERS"]
+                        allow: [PermissionFlagsBits.ManageChannels, PermissionFlagsBits.MuteMembers, PermissionFlagsBits.DeafenMembers]
                     }, {
                         id: newState.guild.id,
-                        deny: ['MANAGE_CHANNELS']
+                        deny: [PermissionFlagsBits.ManageChannels]
                     }]
                 }).then(async (channel) => {
                     await User.updateOne({ userId: newState.member.user.id }, {
