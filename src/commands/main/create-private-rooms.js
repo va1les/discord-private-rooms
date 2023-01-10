@@ -1,42 +1,33 @@
-const { Client, CommandInteraction, ButtonBuilder, ActionRowBuilder, EmbedBuilder, ChannelType, PermissionsBitField, UserFlagsBitField, ButtonStyle } = require('discord.js')
-const { SlashCommandBuilder, Embed } = require('@discordjs/builders')
+const { ChannelType, PermissionsBitField, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js')
+const { SlashCommandBuilder } = require('@discordjs/builders')
 
-const Guild = require('../../models/Guild');
-const BitField = require('sparse-bitfield');
 module.exports = {
     slash: new SlashCommandBuilder()
-        .setName('private-voice')
-        .setDescription("Создать приватные голосовые каналы."),
-    /**
-     * @param {Client} client
-     * @param {CommandInteraction} interaction
-     */
+        .setName('create-private-rooms')
+        .setDescription('Создать или удалить приватные румы.').setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
     async execute(client, interaction) {
-        let data = await Guild.findOne({ guildId: interaction.guild.id });
-        if (!data) {
-            await Guild.create({ guildId: interaction.guild.id });
-        }
-        let newdata = await Guild.findOne({ guildId: interaction.guild.id });
+        let newdata = await client.db.guild.findOne({ guildId: interaction.guild.id });
         if (newdata?.private_voices?.categoryId && newdata?.private_voices?.channelId != null) {
             let btn = new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId('delete').setLabel('Удалить').setStyle(ButtonStyle.Danger))
-            await interaction.reply({ content: `🔨_ _`, ephemeral: true })
-            let message = await interaction.channel.send({ embeds: [new EmbedBuilder().setColor('BLURPLE').setDescription('Система приватных комнат уже существует, удалить?')], components: [btn] })
+            await interaction.deferReply().catch(() => null)
+            let message = await interaction.editReply({ content: `${interaction.user}, приватные-комнаты уже существуют.`, components: [btn] })
+            let collector = message.createMessageComponentCollector();
             setTimeout(() => {
-                message.edit({ components: [] }).catch(() => null)
+                interaction.deleteReply().catch(() => null);
+                collector.stop()
             }, 20 * 1000);
-            let collector = message.createMessageComponentCollector()
             collector.on('collect', async (i) => {
                 if (interaction.user.id != i.user.id) return i.deferUpdate().catcha(() => null);
                 if (i.customId == 'delete') {
-                    message.edit({ components: [], content: `Система приватных комнат Удалена ✅` })
-                    let data = await Guild.findOne({ guildId: interaction.guild.id })
+                    interaction.editReply({ components: [], content: `${client.emoji.success} **${interaction.user.tag}** удалил приватные-комнаты` })
+                    let data = await client.db.guild.findOne({ guildId: interaction.guild.id })
                     let channelId = await client.channels.fetch(data?.private_voices?.channelId).catch(() => null)
                     let textId = await client.channels.fetch(data?.private_voices?.textId).catch(() => null)
                     let categoryId = await client.channels.fetch(data?.private_voices?.categoryId).catch(() => null)
                     channelId?.delete().catch(() => null)
                     textId?.delete().catch(() => null)
                     categoryId?.delete().catch(() => null)
-                    return await Guild.updateOne({ guildId: interaction.guild.id }, {
+                    return await client.db.guild.updateOne({ guildId: interaction.guild.id }, {
                         $set: {
                             'private_voices': {}
                         }
@@ -45,11 +36,11 @@ module.exports = {
             })
         } else {
             let categoryId = await interaction.guild.channels.create({
-                name: `Join To Create [+]`,
+                name: `Приватные комнаты`,
                 type: ChannelType.GuildCategory,
             })
             let channelId = await interaction.guild.channels.create({
-                name: `Create [+]`,
+                name: `Создать [+]`,
                 type: ChannelType.GuildVoice,
                 parent: categoryId,
                 userLimit: 1,
@@ -62,7 +53,7 @@ module.exports = {
                 ]
             })
             let textId = await interaction.guild.channels.create({
-                name: `settigs`,
+                name: `настройка`,
                 parent: categoryId,
                 topic: `Управление приватного канала`,
                 permissionOverwrites: [
@@ -79,13 +70,13 @@ module.exports = {
             let limit = new ButtonBuilder().setCustomId('limit').setEmoji('🫂').setStyle(ButtonStyle.Secondary)
             let kick = new ButtonBuilder().setCustomId('kick').setEmoji('🚫').setStyle(ButtonStyle.Secondary)
 
-            let Buttons = new ActionRowBuilder().addComponents([lock, rename, bit, limit, kick])
+            let Buttons = new ActionRowBuilder().addComponents([rename, lock, bit, limit, kick])
 
-            let Embed = new EmbedBuilder().setAuthor({ name: 'Управление приватного канала', iconURL: interaction.guild.iconURL() })
-                .setDescription('🔒 — открыть / закрыть канал.\n✏️ — переменовать канал.\n📻 — установить битрейт канала.\n🫂 — установить лимит пользователей.\n🚫 — выгнать пользователя с голосового канала.')
-                .setColor('BLURPLE')
+            let Embed = new EmbedBuilder().setAuthor({ name: 'Управление приватной комнатой', iconURL: `https://cdn.discordapp.com/emojis/963689541724688404.webp?size=128&quality=lossless` })
+                .setDescription(`Вы можете изменить конфигурацию своей комнаты c помощью взаимодействий.\n\n✏️ — изменить название комнаты\n🔒 — закрыть/открыть комнату\n📻 — изменить битрейт комнаты\n🫂 — изменить лимит пользователей\n🚫 — выгнать участнику из комнаты`)
+                .setColor(client.colors.default)
             textId.send({ embeds: [Embed], components: [Buttons] })
-            await Guild.updateOne({ guildId: interaction.guild.id }, {
+            await client.db.guild.updateOne({ guildId: interaction.guild.id }, {
                 $set: {
                     'private_voices.mode': true,
                     'private_voices.categoryId': categoryId,
@@ -94,7 +85,7 @@ module.exports = {
                 }
             })
 
-            await interaction.reply({ content: `Каналы успешно созданы.` })
+            await interaction.reply({ content: `${client.emoji.success} **${interaction.user.tag}** создал приватные-комнаты.` })
         }
     }
 }

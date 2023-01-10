@@ -1,5 +1,4 @@
-# discord-private-rooms
-Easy To Use!
+# Discord Bot Template V14.5!
 
 **Links:**
 
@@ -7,7 +6,7 @@ Easy To Use!
 
 ⌨️ Visual Studio Code: https://code.visualstudio.com/
 
-🧑‍💻 Discord Developer Portal: https://discord.com/developers/applications
+📥 Discord Developer Portal: https://discord.com/developers/applications
 
 📑 Discord.js Docs: https://discord.js.org/#/docs/discord.js/14.0.3/general/welcome
 
@@ -17,8 +16,8 @@ Easy To Use!
 # install
 ### 📨 **File** `example.env` rename to `.env`
 ```Shell
-DISCORD_TOKEN=YourTokenHere
-MONGO=YourMongoUriHere
+token=DiscordBotToken
+uri=MongoUri
 ```
 
 ### 📥 Install all modules — `npm install`
@@ -30,4 +29,5 @@ contacts: {
 telegram: "@va1les_tg",
 discord: "! va1les#8845", // https://discord.com/users/550336142160035840
 }
+// команда шардов принадлежит - https://github.com/ZFCStar
 ```
